@@ -6,7 +6,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "Dockerfile.bombardier"
+      - "./bombardier/**"
   pull_request:
     branches: [main]
   workflow_dispatch:
