@@ -4,7 +4,6 @@
         "config:recommended",
         "group:allNonMajor",
         ":disableMajorUpdates",
-        // ":automergeMinor",
         ":automergeAll",
         "docker:pinDigests",
         "regexManagers:dockerfileVersions"
