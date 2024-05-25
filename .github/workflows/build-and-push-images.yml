@@ -1,0 +1,48 @@
+# act --workflows .github/workflows/build-and-push-images.yml --pull=false
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**/Dockerfile'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Generate matrix
+        id: set-matrix
+        run: node .github/generate-matrix.mjs
+
+  build-and-push:
+    needs: generate-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        if: github.event_name != 'pull_request'
+        with:
+          username: yanhao98
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and Push ${{ matrix.folder }}
+        uses: docker/build-push-action@v5
+        with:
+          file: ./${{ matrix.folder }}/Dockerfile
+          context: ./${{ matrix.folder }}
+          pull: true
+          push: ${{ github.event_name != 'pull_request' && github.actor != 'nektos/act' }}
+          tags: yanhao98/${{ matrix.folder }}:latest
+          platforms: linux/amd64,linux/arm64
