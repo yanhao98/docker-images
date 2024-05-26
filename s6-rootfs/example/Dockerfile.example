@@ -19,7 +19,10 @@ RUN apk add --update --no-cache curl
 
 WORKDIR /opt
 COPY --from=rootfs ["/", "/"]
+
 COPY --from=adguard/adguardhome:latest ["/opt/adguardhome", "/opt/adguardhome"]
+VOLUME ["/opt/adguardhome/work", "/opt/adguardhome/conf"]
+
 COPY --from=yanhao98/caddy-dns-cloudflare:latest ["/usr/bin/caddy", "/opt/caddy/caddy"]
 
 # S6 configuration - not required
