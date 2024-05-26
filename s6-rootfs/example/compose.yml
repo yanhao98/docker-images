@@ -1,0 +1,9 @@
+name: s6-example
+services:
+  s6-example:
+    container_name: s6-example
+    environment:
+      - SOME_ENV_VAR=example
+    build:
+      context: .
+      dockerfile: Dockerfile.example

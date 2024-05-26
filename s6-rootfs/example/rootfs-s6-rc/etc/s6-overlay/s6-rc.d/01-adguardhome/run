@@ -1,0 +1,4 @@
+#!/command/execlineb -P
+# shellcheck shell=bash
+
+/opt/adguardhome/AdGuardHome --no-check-update -c /opt/adguardhome/conf/AdGuardHome.yaml -w /opt/adguardhome/work

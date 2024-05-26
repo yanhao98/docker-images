@@ -1,0 +1,32 @@
+# https://github.com/n0rthernl1ghts/s6-rootfs/pkgs/container/s6-rootfs#recommended-way-to-integrate-with-your-image-example
+# ---------------------
+# Build root filesystem
+# ---------------------
+FROM scratch AS rootfs
+
+# Copy over base files
+COPY ["./rootfs-s6-rc", "/"]
+
+# Install S6
+COPY --from=yanhao98/s6-rootfs ["/", "/"]
+
+
+# ---------------------
+# Build image
+# ---------------------
+FROM alpine:3
+RUN apk add --update --no-cache curl
+
+WORKDIR /opt
+COPY --from=rootfs ["/", "/"]
+COPY --from=adguard/adguardhome:latest ["/opt/adguardhome", "/opt/adguardhome"]
+COPY --from=yanhao98/caddy-dns-cloudflare:latest ["/usr/bin/caddy", "/opt/caddy/caddy"]
+
+# S6 configuration - not required
+# See: https://github.com/just-containers/s6-overlay#customizing-s6-overlay-behaviour
+ENV S6_KEEP_ENVS6_KEEP_ENV=1
+ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
+ENV S6_CMD_RECEIVE_SIGNALS=1
+
+# Important, this is required for S6 to work
+ENTRYPOINT ["/init"]

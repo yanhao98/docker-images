@@ -1,0 +1,5 @@
+#!/command/execlineb -P
+# shellcheck shell=sh
+
+# export XDG_CONFIG_HOME=/opt/caddy
+/opt/caddy/caddy run --config /opt/caddy/Caddyfile --adapter caddyfile

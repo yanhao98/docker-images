@@ -1,0 +1,12 @@
+#!/command/with-contenv sh
+# shellcheck shell=sh
+
+sleep 3
+echo "SOME_ENV_VAR=$SOME_ENV_VAR"
+echo "Hello from the container!"
+
+if [ -f /opt/caddy/cert.key ]; then
+  tail -f /dev/null
+else
+  echo "Cert does not exist"
+fi
