@@ -1,27 +1,31 @@
 #!/command/with-contenv sh
 # shellcheck shell=sh
 
-# sleep 3
-
-# Function to check if a port is open using netcat
 check_port() {
-  echo "🔄 Checking if $1:$2 is available..."
+  echo "🔄 检查 $1:$2 是否可用..."
   host=$1
   port=$2
   nc -z $host $port >/dev/null 2>&1
 }
 
-
-# Wait for Caddy to be fully available
-while ! check_port 127.0.0.1 80; do
-  sleep 5
-done
+echo "🚀 启动 AdGuardHome..."
+/command/s6-svc -u /run/service/01-adguardhome
 
 # Wait for AdGuardHome to be fully available
 while ! check_port 127.0.0.1 53; do
-  sleep 5
+  sleep 1
 done
+echo "🎉 AdGuardHome 已启动。"
 
 
-echo "🎉 All dependencies are up. Starting ..."
-tail -f /dev/null
+echo "🚀 启动 Caddy..."
+/command/s6-svc -u /run/service/02-caddy
+
+# Wait for Caddy to be fully available
+while ! check_port 127.0.0.1 80; do
+  sleep 1
+done
+echo "🎉 Caddy 已启动。"
+
+
+exec tail -f /dev/null

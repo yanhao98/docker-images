@@ -1,11 +1,12 @@
 name: s6-example
+# docker compose up --build
 services:
   s6-example:
     container_name: s6-example
     environment:
       - SOME_ENV_VAR=example
-    ports:
-      - 3000:3000
+    # ports:
+    #   - 3000:3000
     build:
       context: .
       dockerfile: Dockerfile.example

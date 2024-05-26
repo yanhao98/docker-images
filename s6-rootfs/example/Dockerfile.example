@@ -15,6 +15,14 @@ COPY --from=yanhao98/s6-rootfs@sha256:0c4d237733eb1bf42809f3c7a9e03f33bd4ede9ce5
 # Build image
 # ---------------------
 FROM alpine:3@sha256:77726ef6b57ddf65bb551896826ec38bc3e53f75cdde31354fbffb4f25238ebd
+
+ENV TZ=Asia/Shanghai
+RUN apk add alpine-conf && \
+  /sbin/setup-timezone -z Asia/Shanghai && \
+  apk del alpine-conf
+
+ENV XDG_CONFIG_HOME=/config
+ENV XDG_DATA_HOME=/data
 RUN apk add --update --no-cache curl
 
 WORKDIR /opt
@@ -27,9 +35,9 @@ COPY --from=yanhao98/caddy-dns-cloudflare:latest@sha256:c20b54b06cf643d52e8ff103
 
 # S6 configuration - not required
 # See: https://github.com/just-containers/s6-overlay#customizing-s6-overlay-behaviour
-ENV S6_KEEP_ENV=1
-ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
-ENV S6_CMD_RECEIVE_SIGNALS=1
+# ENV S6_KEEP_ENV=1
+# ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
+# ENV S6_CMD_RECEIVE_SIGNALS=1
 
 # Important, this is required for S6 to work
 ENTRYPOINT ["/init"]
