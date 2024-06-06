@@ -28,7 +28,7 @@ RUN apk add --update --no-cache curl
 WORKDIR /opt
 COPY --from=rootfs ["/", "/"]
 
-COPY --from=adguard/adguardhome:latest@sha256:f890b77505e410e295cc96830632b46075d7263cef52c158f9331348c98e1228 ["/opt/adguardhome", "/opt/adguardhome"]
+COPY --from=adguard/adguardhome:latest@sha256:3a143e6c071cd72b1aa5aa46ba0205a86f085d54daca94b7fc7ab6759e3fb6fa ["/opt/adguardhome", "/opt/adguardhome"]
 VOLUME ["/opt/adguardhome/work", "/opt/adguardhome/conf"]
 
 COPY --from=yanhao98/caddy-dns-cloudflare:latest@sha256:09446e9516f7bd4bb975384d26c31f39bebdadb9df89e0c5d02f5009c39c53be ["/usr/bin/caddy", "/opt/caddy/caddy"]
