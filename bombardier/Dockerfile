@@ -6,7 +6,7 @@ FROM golang:latest@sha256:0f7691253e132744318ff4b02e0824fec9fa4f3b43b08afd119559
 # TODO: [下载就行了](https://github.com/codesenberg/bombardier/releases)
 RUN go install github.com/codesenberg/bombardier@latest
 
-FROM debian:stable-slim@sha256:2b2e35d67c8fda0ba853d40cd18e57b99ab12d82fd3200607015eb09784068bd
+FROM debian:stable-slim@sha256:0200978f5b28cc795ec1699254fd789263193af9ab650bd2e4ef2bedf6cbd1c2
 COPY --from=builder /go/bin/bombardier /usr/local/bin/bombardier
 RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 ENTRYPOINT ["/usr/local/bin/bombardier"]
