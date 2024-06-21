@@ -1,6 +1,6 @@
 # https://github.com/just-containers/s6-overlay
 
-FROM alpine:3@sha256:77726ef6b57ddf65bb551896826ec38bc3e53f75cdde31354fbffb4f25238ebd as download-s6-overlay
+FROM alpine:3@sha256:b89d9c93e9ed3597455c90a0b88a8bbb5cb7188438f70953fede212a0c4394e0 as download-s6-overlay
 # renovate: datasource=github-releases depName=just-containers/s6-overlay versioning=loose
 ARG S6_OVERLAY_VERSION=v3.2.0.0
 ARG S6_OVERLAY_BASE_URL=https://github.com/just-containers/s6-overlay/releases/download
