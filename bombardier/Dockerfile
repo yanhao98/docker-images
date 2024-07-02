@@ -2,7 +2,7 @@
 # docker run --rm yanhao98/bombardier -n 1000 -c 50 https://oo1.dev/
 # docker run --rm yanhao98/bombardier -c 100 -d 30s -l https://oo1.dev/
 
-FROM golang:latest@sha256:a66eda637829ce891e9cf61ff1ee0edf544e1f6c5b0e666c7310dce231a66f28 as builder
+FROM golang:latest@sha256:3589439790974ec05491b66b656bf1048d0f50dd010a903463e3156ba1fc26de as builder
 # TODO: [下载就行了](https://github.com/codesenberg/bombardier/releases)
 RUN go install github.com/codesenberg/bombardier@latest
 
