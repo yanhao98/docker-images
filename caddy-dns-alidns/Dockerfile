@@ -1,4 +1,4 @@
-FROM caddy:2-builder@sha256:b37224d6be513d3d083bc7e95c6d97dd6bed82966972950ae9d1d8139ac60f8b AS builder
+FROM caddy:2-builder@sha256:150c52a85b5d63f5c5892c20725df06669e8abf749584bfc24d3fa92f28c3ab4 AS builder
 
 RUN xcaddy build \
     --with github.com/caddy-dns/alidns
