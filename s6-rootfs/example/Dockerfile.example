@@ -14,7 +14,7 @@ COPY --from=yanhao98/s6-rootfs@sha256:647ea0d4437756ed374b8283a7df42629b0c273017
 # ---------------------
 # Build image
 # ---------------------
-FROM alpine:3@sha256:0a4eaa0eecf5f8c050e5bba433f58c052be7587ee8af3e8b3910ef9ab5fbe9f5
+FROM alpine:3@sha256:beefdbd8a1da6d2915566fde36db9db0b524eb737fc57cd1367effd16dc0d06d
 
 ENV TZ=Asia/Shanghai
 RUN apk add alpine-conf && \
