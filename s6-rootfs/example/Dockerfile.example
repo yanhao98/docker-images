@@ -8,7 +8,7 @@ FROM scratch AS rootfs
 COPY ["./rootfs-s6-rc", "/"]
 
 # Install S6
-COPY --from=yanhao98/s6-rootfs@sha256:647ea0d4437756ed374b8283a7df42629b0c273017069ef1697957a70517d4d0 ["/", "/"]
+COPY --from=yanhao98/s6-rootfs@sha256:e073f2b79d697701365029033da2406781f07859397570a66dae48b9c4989ed8 ["/", "/"]
 
 
 # ---------------------
