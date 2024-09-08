@@ -31,7 +31,7 @@ COPY --from=rootfs ["/", "/"]
 COPY --from=adguard/adguardhome:latest@sha256:d16cc7517ab96f843e7f8bf8826402dba98f5e6b175858920296243332391589 ["/opt/adguardhome", "/opt/adguardhome"]
 VOLUME ["/opt/adguardhome/work", "/opt/adguardhome/conf"]
 
-COPY --from=yanhao98/caddy-dns-cloudflare:latest@sha256:3714d975810c11dacbe442db7006790741c9228cea7f888929513b262e193438 ["/usr/bin/caddy", "/opt/caddy/caddy"]
+COPY --from=yanhao98/caddy-dns-cloudflare:latest@sha256:0b30b5efc16b22ab5815c4c1fd9f797364523a53ca8780475918d2938232c37b ["/usr/bin/caddy", "/opt/caddy/caddy"]
 
 # S6 configuration - not required
 # See: https://github.com/just-containers/s6-overlay#customizing-s6-overlay-behaviour
