@@ -3,6 +3,6 @@ FROM caddy:2-builder@sha256:5e05b57b569a3b9a19567321e839560e49a559f31442f92f92c4
 RUN xcaddy build \
     --with github.com/caddy-dns/alidns
 
-FROM caddy:2@sha256:2ae8f7fcd4d82d1c5c1c4dc45ad5f24ab1c1f3af4dd6db03a83d126047d7a939
+FROM caddy:2@sha256:c6a5f2835a53fd9e2b5e0623dc7ebf0f89c163c21c05cbbc35e4ea31ff424417
 
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
