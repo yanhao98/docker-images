@@ -1,12 +1,21 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": [
-        "config:recommended",
+        "config:base",
+        ":disableDependencyDashboard",
         "group:allNonMajor",
+        ":semanticCommitTypeAll(chore)",
         ":disableMajorUpdates",
         ":automergeAll",
         "docker:pinDigests",
-        "regexManagers:dockerfileVersions"
+        "customManagers:dockerfileVersions"
     ],
-    "customManagers": []
+    "packageRules": [
+        {
+            "matchPackagePatterns": [
+                "*"
+            ],
+            "stabilityDays": 7
+        }
+    ]
 }
