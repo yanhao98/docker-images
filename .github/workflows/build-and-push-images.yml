@@ -38,7 +38,7 @@ jobs:
           username: yanhao98
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and Push ${{ matrix.folder }}
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           file: ./${{ matrix.folder }}/Dockerfile
           context: ./${{ matrix.folder }}
