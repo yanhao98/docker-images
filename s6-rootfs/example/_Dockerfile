@@ -8,13 +8,13 @@ FROM scratch AS rootfs
 COPY ["./rootfs-s6-rc", "/"]
 
 # Install S6
-COPY --from=yanhao98/s6-rootfs@sha256:d0b5d8390c45dddfd0bd16322f216f9ad0547bbd9604db920488a0eb5197a5df ["/", "/"]
+COPY --from=yanhao98/s6-rootfs:latest ["/", "/"]
 
 
 # ---------------------
 # Build image
 # ---------------------
-FROM alpine:3@sha256:cdacfe818cee9df48aa1d6d87000500138926a798917f4c2993285aac3dbd8a1
+FROM alpine:3.20.3
 
 ENV TZ=Asia/Shanghai
 RUN apk add alpine-conf && \
@@ -28,7 +28,7 @@ RUN apk add --update --no-cache curl
 WORKDIR /opt
 COPY --from=rootfs ["/", "/"]
 
-COPY --from=adguard/adguardhome:latest@sha256:d16cc7517ab96f843e7f8bf8826402dba98f5e6b175858920296243332391589 ["/opt/adguardhome", "/opt/adguardhome"]
+COPY --from=adguard/adguardhome:v0.107.53 ["/opt/adguardhome", "/opt/adguardhome"]
 VOLUME ["/opt/adguardhome/work", "/opt/adguardhome/conf"]
 
 COPY --from=yanhao98/caddy-dns-cloudflare:latest@sha256:5ac53e3f777d51ac4b04e6106cce5fa74ba60b64d5e850efb82bcf61d0765e0c ["/usr/bin/caddy", "/opt/caddy/caddy"]
