@@ -1,8 +1,11 @@
 {
-    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": [
-        "https://git.1-h.cc/examples/renovate-example/raw/branch/main/default.json5",
-        ":automergeAll"
-    ],
-    "dependencyDashboard": false
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["https://git.1-h.cc/examples/renovate-example/raw/branch/main/default.json5", ":automergeAll"],
+  "packageRules": [
+    {
+      "minimumReleaseAge": "3 days",
+      "matchPackageNames": ["*"]
+    }
+  ],
+  "dependencyDashboard": false
 }
