@@ -1,6 +1,6 @@
 # https://github.com/just-containers/s6-overlay
 
-FROM alpine:3.21.1 AS download-s6-overlay
+FROM alpine:3.21.2 AS download-s6-overlay
 # https://github.com/just-containers/s6-overlay/releases
 # renovate: datasource=github-releases depName=just-containers/s6-overlay versioning=loose
 ARG S6_OVERLAY_VERSION=v3.2.0.2
