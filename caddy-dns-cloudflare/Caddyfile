@@ -1,0 +1,36 @@
+{
+	debug # not required; recommended while testing
+
+	servers {
+		protocols h1 h2 h3 # https://caddyserver.com/docs/caddyfile/options#protocols
+		trusted_proxies static 192.168.1.1 # Hello, world! Your IP is RemoteIP: 192.168.1.1/ClientIP: 192.168.1.2. Your request was GET /.
+	}
+}
+
+(common_error_handler) {
+	# https://caddyserver.com/docs/caddyfile/directives/handle_errors
+	handle_errors {
+		@502 {
+			expression {http.error.status_code} == 502
+		}
+		respond @502 "502 Bad Gateway" 502
+	}
+}
+
+(tls_cf) {
+	tls {
+		dns cloudflare {env.CF_API_TOKEN}
+		ech cloudflare-ech.com # https://github.com/caddyserver/caddy/releases/tag/v2.10.0-beta.1
+	}
+}
+
+{$DOMAIN} {
+	log
+	import tls_cf
+	import common_error_handler
+	handle {
+		templates
+		respond "Hello, world! Your IP is RemoteIP: {{.RemoteIP}}/ClientIP: {{.ClientIP}}. Your request was {{.Req.Method}} {{.Req.URL}}."
+		encode zstd gzip
+	}
+}

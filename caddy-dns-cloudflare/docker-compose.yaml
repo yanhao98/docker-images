@@ -1,0 +1,31 @@
+name: caddy-dns-cloudflare
+services:
+  caddy:
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    restart: unless-stopped
+    pull_policy: always
+    env_file:
+      - .env
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # ping host.docker.internal
+    volumes:
+      - type: bind
+        source: ./Caddyfile
+        target: /etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    command: [ "caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile", "--watch" ]
+    image: yanhao98/caddy-dns-cloudflare:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+volumes:
+  caddy_data:
+  caddy_config:
