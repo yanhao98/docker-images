@@ -5,7 +5,7 @@ FROM golang:1.24.1 AS builder
 # TODO: [下载就行了](https://github.com/codesenberg/bombardier/releases)
 RUN go install github.com/codesenberg/bombardier@latest
 
-FROM debian:12.9-slim
+FROM debian:12.10-slim
 COPY --from=builder /go/bin/bombardier /usr/local/bin/bombardier
 RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 ENTRYPOINT ["/usr/local/bin/bombardier"]
