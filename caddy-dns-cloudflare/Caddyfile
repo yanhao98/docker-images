@@ -3,14 +3,14 @@
 	# >>>
 	email caddy@oo1.dev
 	acme_ca https://acme-staging-v02.api.letsencrypt.org/directory # <<< Let's Encrypt 的 ACME v2 测试环境端点 URL
-	# acme_dns cloudflare {env.CF_API_TOKEN}
+	acme_dns cloudflare {env.CF_API_TOKEN} # << 配置用于所有 ACME 事务的 ACME DNS 挑战提供程序。
 	# https://caddy.community/t/how-to-use-dns-provider-modules-in-caddy-2/8148
 	# https://caddyserver.com/docs/caddyfile/options#acme-dns
 	# <<<
 
 	# >>> Encrypted Client Hello (ECH)
-	dns cloudflare {env.CF_API_TOKEN} # <<< 如果启用了 ACME DNS 挑战但未配置 DNS 提供商，将使用此全局默认设置。
-	# ech ech.19980901.xyz
+	# dns cloudflare {env.CF_API_TOKEN} # <<< 如果启用了 ACME DNS 挑战但未配置 DNS 提供商，将使用此全局默认设置。 https://caddyserver.com/docs/caddyfile/options#dns
+	ech ech.19980901.xyz
 	# <<< https://github.com/caddyserver/caddy/releases/tag/v2.10.0
 	# <<< https://caddyserver.com/docs/automatic-https#encrypted-clienthello-ech
 
@@ -30,20 +30,16 @@
 	}
 }
 
-(tls_cf) {
-	tls {
-		dns cloudflare {env.CF_API_TOKEN}
-		resolvers 1.1.1.1
-	}
-}
-
-caddy-test.19980901.xyz {
+caddy-test-1.19980901.xyz, caddy-test-4.19980901.xyz {
 	log
-	# import tls_cf
 	import common_error_handler
 	handle {
 		templates
 		respond "Hello, world! Your IP is RemoteIP: {{.RemoteIP}}/ClientIP: {{.ClientIP}}. Your request was {{.Req.Method}} {{.Req.URL}}."
 		encode zstd gzip
 	}
+}
+
+*.19980901.xyz, caddy-test-2.19980901.xyz, caddy-test-3.19980901.xyz {
+	respond "Hello there!"
 }

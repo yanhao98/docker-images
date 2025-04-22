@@ -9,10 +9,10 @@ services:
       - .env
     cap_add:
       - NET_ADMIN
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
+    # ports:
+    #   - "80:80"
+    #   - "443:443"
+    #   - "443:443/udp"
     extra_hosts:
       - "host.docker.internal:host-gateway" # ping host.docker.internal
     volumes:
