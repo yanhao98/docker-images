@@ -1,0 +1,20 @@
+name: bun-git-runner
+services:
+  bun-git-runner:
+    init: true
+    # stop_signal: SIGTERM
+    # stop_grace_period: 10s
+    environment:
+      GIT_REPO_URL: https://github.com/render-examples/elysiajs-hello-world.git
+    env_file:
+      - .env
+    volumes:
+      - node_modules:/usr/src/app/node_modules
+    image: yanhao98/bun-git-runner:latest
+    ports:
+      - "3000:3000"
+    build:
+      context: .
+      dockerfile: Dockerfile
+volumes:
+  node_modules:
