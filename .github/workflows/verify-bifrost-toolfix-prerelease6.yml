@@ -1,0 +1,69 @@
+name: verify-bifrost-toolfix-prerelease6
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull published image
+        run: docker pull ghcr.io/yanhao98/bifrost:toolfix-prerelease6
+
+      - name: Start container
+        run: docker run -d --rm --name bifrost-verify -p 18080:8080 ghcr.io/yanhao98/bifrost:toolfix-prerelease6
+
+      - name: Wait for health
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:18080/health >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          exit 1
+
+      - name: Configure fake providers and routes
+        run: |
+          curl -fsS -H 'Content-Type: application/json' -X POST http://127.0.0.1:18080/api/providers \
+            --data '{"provider":"toolsearch-fake","custom_provider_config":{"base_provider_type":"openai","is_key_less":false,"allowed_requests":{"chat_completion":true,"chat_completion_stream":true,"responses":true,"responses_stream":true,"list_models":true}},"network_config":{"base_url":"https://fake-api-hono-vite.oo1.dev/v1"},"send_back_raw_request":true,"send_back_raw_response":true,"store_raw_request_response":true}'
+          curl -fsS -H 'Content-Type: application/json' -X POST http://127.0.0.1:18080/api/providers/toolsearch-fake/keys \
+            --data '{"name":"toolsearch-fake-key","value":"333","models":["*"],"weight":1}'
+          curl -fsS -H 'Content-Type: application/json' -X POST http://127.0.0.1:18080/api/governance/routing-rules \
+            --data '{"name":"toolsearch-route-gpt54","description":"Route gpt-5.4 repro traffic to fake upstream success model","enabled":true,"cel_expression":"model == ""gpt-5.4""","targets":[{"provider":"toolsearch-fake","model":"success","weight":1}],"fallbacks":["toolsearch-fake/success"],"scope":"global","priority":10}'
+          curl -fsS -H 'Content-Type: application/json' -X POST http://127.0.0.1:18080/api/providers \
+            --data '{"provider":"openai","network_config":{"base_url":"https://fake-api-hono-vite.oo1.dev","default_request_timeout_in_seconds":30,"max_retries":0,"retry_backoff_initial":500,"retry_backoff_max":5000},"concurrency_and_buffer_size":{"concurrency":1000,"buffer_size":5000},"proxy_config":null,"send_back_raw_request":true,"send_back_raw_response":true,"store_raw_request_response":true}'
+          curl -fsS -H 'Content-Type: application/json' -X POST http://127.0.0.1:18080/api/providers/openai/keys \
+            --data '{"name":"openai-fake-key","value":"333","models":["*"],"weight":1}'
+          curl -fsS -H 'Content-Type: application/json' -X POST http://127.0.0.1:18080/api/governance/routing-rules \
+            --data '{"name":"openai-namespace-probe","description":"Route namespace probe via stock openai provider","enabled":true,"cel_expression":"model == ""openai-namespace-probe""","targets":[{"provider":"openai","model":"success","weight":1}],"fallbacks":["openai/success"],"scope":"global","priority":30}'
+
+      - name: Run validation probes
+        run: |
+          mkdir -p validation
+          curl -sS -H 'Content-Type: application/json' -X POST http://127.0.0.1:18080/v1/responses \
+            --data '{"model":"gpt-5.4","input":"hello","tools":[{"type":"tool_search","execution":"client","description":"# Tool discovery\n\nSearches over deferred tool metadata with BM25 and exposes matching tools for the next model call.","parameters":{"type":"object","properties":{"query":{"type":"string"}},"required":["query"],"additionalProperties":false}}]}' \
+            > validation/tool_search.json
+          curl -sS -H 'Content-Type: application/json' -X POST http://127.0.0.1:18080/v1/responses \
+            --data '{"model":"gpt-5.4","input":"hello","tools":[{"type":"web_search","external_web_access":true,"search_content_types":["text","image"]}]}' \
+            > validation/web_search.json
+          curl -sS -H 'Content-Type: application/json' -X POST http://127.0.0.1:18080/v1/responses \
+            --data '{"model":"openai-namespace-probe","input":"hello","tools":[{"type":"namespace","name":"mcp__node_repl__","description":"node repl tools","tools":[{"type":"function","name":"js","description":"run js","parameters":{"type":"object","properties":{"code":{"type":"string"}},"required":["code"]}}]}]}' \
+            > validation/namespace.json
+          cat validation/tool_search.json
+          cat validation/web_search.json
+          cat validation/namespace.json
+
+      - name: Upload validation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bifrost-toolfix-prerelease6-validation
+          path: validation/
+
+      - name: Cleanup
+        if: always()
+        run: docker rm -f bifrost-verify || true
