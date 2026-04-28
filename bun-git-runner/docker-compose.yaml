@@ -6,11 +6,12 @@ services:
     # stop_grace_period: 10s
     environment:
       GIT_REPO_URL: https://github.com/render-examples/elysiajs-hello-world.git
-    env_file:
-      - .env
+    # env_file:
+    #   - .env
     volumes:
       - node_modules:/usr/src/app/node_modules
     image: yanhao98/bun-git-runner:latest
+    command: ["bun", "run", "src/index.ts"]
     ports:
       - "3000:3000"
     build:

@@ -4,7 +4,7 @@
 set -euo pipefail
 
 # 校验必需环境变量
-if [ -z "$GIT_REPO_URL" ]; then
+if [ -z "${GIT_REPO_URL:-}" ]; then
   echo "❌ 环境变量 GIT_REPO_URL 未设置！请提供 Git 仓库地址。"
   echo "示例: -e GIT_REPO_URL=https://github.com/user/repo.git"
   exit 1
@@ -20,6 +20,7 @@ export GIT_TERMINAL_PROMPT=0
 GIT_CONNECT_TIMEOUT=${GIT_CONNECT_TIMEOUT:-15}
 GIT_FETCH_TIMEOUT=${GIT_FETCH_TIMEOUT:-30}
 GIT_FETCH_RETRIES=${GIT_FETCH_RETRIES:-2}
+GIT_LFS_PULL_TIMEOUT=${GIT_LFS_PULL_TIMEOUT:-120}
 
 mask_repo_url() {
   # 屏蔽 URL 中的敏感信息（如 https://user:token@host）
@@ -60,6 +61,29 @@ cleanup_git_locks() {
   fi
 }
 
+setup_git_lfs() {
+  if command -v git-lfs >/dev/null 2>&1; then
+    git lfs install --local
+  fi
+}
+
+run_git_lfs_pull() {
+  if ! command -v git-lfs >/dev/null 2>&1; then
+    echo "⚠️ 未安装 git-lfs，跳过 LFS 文件拉取。"
+    return 0
+  fi
+
+  echo "========================================"
+  echo "📦 拉取 Git LFS 文件"
+  echo "========================================"
+
+  if command -v timeout >/dev/null 2>&1; then
+    timeout "${GIT_LFS_PULL_TIMEOUT}s" git lfs pull origin "$GIT_BRANCH"
+  else
+    git lfs pull origin "$GIT_BRANCH"
+  fi
+}
+
 echo "========================================"
 echo "📦 初始化项目仓库"
 echo "========================================"
@@ -71,15 +95,19 @@ if [ ! -d ".git" ]; then
   echo "🔄 正在初始化 Git 仓库并拉取 $MASKED_REPO_URL (分支: $GIT_BRANCH)..."
   git init -b "$GIT_BRANCH"
   git remote add origin "$GIT_REPO_URL"
+  setup_git_lfs
   run_git_fetch
   git checkout -B "$GIT_BRANCH" FETCH_HEAD
   git reset --hard FETCH_HEAD
+  run_git_lfs_pull
 else
   echo "🔄 发现已存在的 Git 仓库，正在拉取最新代码..."
   git remote set-url origin "$GIT_REPO_URL"
+  setup_git_lfs
   run_git_fetch
   git checkout -B "$GIT_BRANCH" FETCH_HEAD
   git reset --hard FETCH_HEAD
+  run_git_lfs_pull
 fi
 
 echo "========================================"
