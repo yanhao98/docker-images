@@ -3,7 +3,7 @@
 FROM alpine:3.24.1 AS download-s6-overlay
 # https://github.com/just-containers/s6-overlay/releases
 # renovate: datasource=github-releases depName=just-containers/s6-overlay versioning=loose
-ARG S6_OVERLAY_VERSION=v3.2.3.1
+ARG S6_OVERLAY_VERSION=v3.2.3.2
 ARG S6_OVERLAY_BASE_URL=https://github.com/just-containers/s6-overlay/releases/download
 RUN set -x && \
   apk add --no-cache --virtual .build-deps curl && \
